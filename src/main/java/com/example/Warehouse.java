@@ -58,9 +58,11 @@ public class Warehouse {
                 .collect(Collectors.toList());
     }
 
-    public List<Product> shippableProducts(){
+    public List<Shippable> shippableProducts() {
         return CACHE.values().stream()
-                .flatMap(List -> List.stream())
+                .flatMap(List::stream)
+                .filter(p -> p instanceof Shippable)
+                .map(p -> (Shippable) p)
                 .toList();
     }
 }
