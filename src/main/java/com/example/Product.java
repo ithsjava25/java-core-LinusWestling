@@ -15,7 +15,11 @@ public abstract class Product {
         this.id = id;
         this.name = name;
         this.category = category;
-        this.price = price;
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Price cannot be negative.");
+        } else {
+            this.price = price;
+        }
     }
 
     // Get methods
