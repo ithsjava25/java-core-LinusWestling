@@ -22,7 +22,7 @@ public class FoodProducts extends Product{
     public String productDetails(){
         return "Food: " + name() + ", Expires: " + expirationDate;
     }
-    public int costOfShipping(){
+    public BigDecimal costOfShipping(){
         return weight().multiply(BigDecimal.valueOf(50));
     }
 }
