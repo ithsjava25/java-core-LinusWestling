@@ -51,7 +51,6 @@ public abstract class Product {
     }
 
     public abstract String productDetails();
-    public abstract BigDecimal costOfShipping();
 
     @Override
     public boolean equals(Object obj) {

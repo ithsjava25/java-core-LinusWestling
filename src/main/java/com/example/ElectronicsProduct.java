@@ -3,7 +3,7 @@ package com.example;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class ElectronicsProduct extends Product{
+public class ElectronicsProduct extends Product implements  Shippable{
 
     // Implements Shippable.
 
@@ -18,14 +18,16 @@ public class ElectronicsProduct extends Product{
         }
     }
 
-    public int getWarrantyMonths() {
-        return warrantyMonths;
-    }
+        /*
+        public int getWarrantyMonths() {
+            return warrantyMonths;
+        }
+         */
 
     public String productDetails(){
         return "Electronics: " + name() + "Warranty: " + warrantyMonths;
     }
-    public BigDecimal costOfShipping() {
+    public BigDecimal calculateShippingCost() {
         if (weight().compareTo(BigDecimal.valueOf(5)) < 0) {
             return BigDecimal.valueOf(79);
         } else {
