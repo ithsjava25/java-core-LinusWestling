@@ -9,22 +9,20 @@ public class FoodProducts extends Product{
      //   Implements Perishable and Shippable.
 
     private final LocalDate expirationDate;
-    private final BigDecimal weight;
 
-    public FoodProducts(UUID id, String name, Category category, BigDecimal price, LocalDate expirationDate, BigDecimal weight){
-        super(id, name, category, price);
+    public FoodProducts(UUID id, String name, Category category, BigDecimal price, BigDecimal weight, LocalDate expirationDate){
+        super(id, name, category, price, weight);
         this.expirationDate = expirationDate;
-        if(weight.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Weight cannot be negative.");
-        } else {
-            this.weight = weight;
-        }
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
     }
 
     public String productDetails(){
         return "Food: " + name() + ", Expires: " + expirationDate;
     }
-    public BigDecimal costOfShipping(){
-        return weight.multiply(BigDecimal.valueOf(50));
+    public int costOfShipping(){
+        return weight().multiply(BigDecimal.valueOf(50));
     }
 }

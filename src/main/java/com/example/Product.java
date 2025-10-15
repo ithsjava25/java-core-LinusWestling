@@ -9,9 +9,10 @@ public abstract class Product {
     private final String name;
     Category category;
     private BigDecimal price;
+    private BigDecimal weight;
 
     // Public constructor
-    public Product(UUID id, String name, Category category, BigDecimal price){
+    public Product(UUID id, String name, Category category, BigDecimal price, BigDecimal weight){
         this.id = id;
         this.name = name;
         this.category = category;
@@ -19,6 +20,11 @@ public abstract class Product {
             throw new IllegalArgumentException("Price cannot be negative.");
         } else {
             this.price = price;
+        }
+        if(weight.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Weight cannot be negative.");
+        } else {
+            this.weight = weight;
         }
     }
 
@@ -34,6 +40,9 @@ public abstract class Product {
     }
     public BigDecimal price(){
         return price;
+    }
+    public BigDecimal weight(){
+        return weight;
     }
 
     // Set method (only price as instructed)
