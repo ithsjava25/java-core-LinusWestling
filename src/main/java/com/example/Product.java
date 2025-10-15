@@ -11,7 +11,7 @@ public abstract class Product {
     private BigDecimal price;
 
     // Public constructor
-    public Product(){
+    public Product(UUID id, String name, Category category, BigDecimal price){
         this.id = id;
         this.name = name;
         this.category = category;
@@ -39,4 +39,18 @@ public abstract class Product {
 
     public abstract String productDetails();
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
