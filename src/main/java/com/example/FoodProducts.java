@@ -7,10 +7,20 @@ import java.util.UUID;
 public class FoodProducts extends Product implements Perishable, Shippable{
 
     private final LocalDate expirationDate;
+    private BigDecimal weight;
 
-    public FoodProducts(UUID id, String name, Category category, BigDecimal price, BigDecimal weight, LocalDate expirationDate){
-        super(id, name, category, price, weight);
+    public FoodProducts(UUID id, String name, Category category, BigDecimal price, LocalDate expirationDate, BigDecimal weight){
+        super(id, name, category, price);
         this.expirationDate = expirationDate;
+        if(weight.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Weight cannot be negative.");
+        } else {
+            this.weight = weight;
+        }
+    }
+
+    public double weight(){
+        return weight.doubleValue();
     }
 
     @Override
@@ -22,6 +32,7 @@ public class FoodProducts extends Product implements Perishable, Shippable{
         return "Food: " + name() + ", Expires: " + expirationDate;
     }
     public BigDecimal calculateShippingCost(){
-        return weight().multiply(BigDecimal.valueOf(50));
+        return BigDecimal.valueOf(weight()).multiply(BigDecimal.valueOf(50));
+
     }
 }

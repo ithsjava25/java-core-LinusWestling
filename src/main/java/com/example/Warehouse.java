@@ -22,8 +22,10 @@ public class Warehouse {
         }
     }
 
-    public List<Product> getProducts(String name) {
-        return CACHE.getOrDefault(name, List.of());
+    public List<Product> getProducts() {
+        return CACHE.values().stream()
+                .flatMap(List -> List.stream())
+                .toList();
     }
 
     // Returnera produkten ifall det finns ett matchande ID
