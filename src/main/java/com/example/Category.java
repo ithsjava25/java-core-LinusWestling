@@ -7,7 +7,6 @@ import java.util.Objects;
 public final class Category {
 
     private static final Map<String, Category> CACHE = new HashMap<>();
-
     private final String name;
 
     private Category(String name) {

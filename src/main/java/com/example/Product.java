@@ -1,6 +1,8 @@
 package com.example;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class Product {
