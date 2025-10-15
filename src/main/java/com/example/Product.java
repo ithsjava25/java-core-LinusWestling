@@ -1,25 +1,36 @@
 package com.example;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class Product {
 
     private final UUID id;
     private final String name;
-    Category category;
+    private Category category;
     private BigDecimal price;
+    private static final Set<UUID> USED_IDS = new HashSet<>();
 
     // Public constructor
     public Product(UUID id, String name, Category category, BigDecimal price){
+
+        if (id == null || name == null || category == null || price == null) {
+            throw new IllegalArgumentException("Id, name, category, and price cannot be null.");
+        }
+        if (USED_IDS.contains(id)) {
+            throw new IllegalArgumentException("Duplicate UUID: " + id + ", use UUID.randomUUID() while constructing a new product");
+        }
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Price cannot be negative.");
+        }
+
         this.id = id;
         this.name = name;
         this.category = category;
-        if (price.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price cannot be negative.");
-        } else {
-            this.price = price;
-        }
+        this.price = price;
+
     }
 
     // Get methods

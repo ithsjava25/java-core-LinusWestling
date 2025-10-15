@@ -12,16 +12,17 @@ public class ElectronicsProduct extends Product implements Shippable{
 
     public ElectronicsProduct(UUID id, String name, Category category, BigDecimal price, int warrantyMonths, BigDecimal weight){
         super(id, name, category, price);
+
         if(warrantyMonths < 0){
             throw new IllegalArgumentException("Warranty months cannot be negative.");
-        } else{
-            this.warrantyMonths = warrantyMonths;
         }
         if(weight.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Weight cannot be negative.");
-        } else {
-            this.weight = weight;
         }
+
+        this.warrantyMonths = warrantyMonths;
+        this.weight = weight;
+
     }
 
     public double weight(){
@@ -29,7 +30,7 @@ public class ElectronicsProduct extends Product implements Shippable{
     }
 
     public String productDetails(){
-        return "Electronics: " + name() + "Warranty: " + warrantyMonths;
+        return "Electronics: " + name() + ", Warranty: " + warrantyMonths + " months";
     }
     public BigDecimal calculateShippingCost() {
         if (weight() < 5) {

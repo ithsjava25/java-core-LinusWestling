@@ -4,19 +4,24 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class FoodProducts extends Product implements Perishable, Shippable{
+public class FoodProduct extends Product implements Perishable, Shippable{
 
     private final LocalDate expirationDate;
     private BigDecimal weight;
 
-    public FoodProducts(UUID id, String name, Category category, BigDecimal price, LocalDate expirationDate, BigDecimal weight){
+    public FoodProduct(UUID id, String name, Category category, BigDecimal price, LocalDate expirationDate, BigDecimal weight){
         super(id, name, category, price);
-        this.expirationDate = expirationDate;
+
+        if (expirationDate == null) {
+            throw new IllegalArgumentException("Expiration date and weight cannot be null.");
+        }
         if(weight.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Weight cannot be negative.");
-        } else {
-            this.weight = weight;
         }
+
+        this.expirationDate = expirationDate;
+        this.weight = weight;
+
     }
 
     public double weight(){

@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 
 public class Warehouse {
 
-    private Map<String, List<Product>> CACHE = new HashMap<>();
+    private static final Map<String, Warehouse> INSTANCES = new HashMap<>();
+    private Map<Category, List<Product>> CACHE = new HashMap<>();
     private final Set<UUID> changedProducts = new HashSet<>();
     private final String name;
 
@@ -14,14 +15,27 @@ public class Warehouse {
         this.name = name;
     }
 
-    public void addProduct(String name, Product product){
+    public static Warehouse getInstance(String name) {
+        return INSTANCES.computeIfAbsent(name, k -> new Warehouse(k));
+    }
+
+    public void clearProducts() {
+        CACHE.clear();
+    }
+
+    public boolean isEmpty() {
+        return CACHE.isEmpty();
+    }
+
+    public void addProduct(Product product){
         if(product == null) {
             throw new IllegalArgumentException("Product cannot be null.");
         } else {
-            CACHE.computeIfAbsent(name, k -> new ArrayList<>()).add(product);
+            Category category = product.category();
+            CACHE.computeIfAbsent(category, k -> new ArrayList<>()).add(product);
         }
     }
-
+    // Return list of all products
     public List<Product> getProducts() {
         return CACHE.values().stream()
                 .flatMap(List -> List.stream())
@@ -35,7 +49,21 @@ public class Warehouse {
                 .map(p -> p.uuid())
                 .filter(uuid -> uuid.equals(id))
                 .toList();
+    }
 
+    public Map<Category, List<Product>> getProductsGroupedByCategories(){
+        return CACHE.values().stream()
+                .flatMap(List -> List.stream())
+                .collect(Collectors.groupingBy(Product::category));
+    }
+
+
+    // Remove object with matching UUID. They are always unique (Product.java row 22)
+    public void remove(UUID id) {
+        CACHE.values().forEach(list ->
+                list.removeIf(product -> product.uuid().equals(id))
+        );
+        CACHE.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
     public void updateProductPrice(UUID id, BigDecimal price){
@@ -49,11 +77,11 @@ public class Warehouse {
         changedProducts.add(id);
     }
 
-    public List<Product> expiredProducts(){
+    public List<Perishable> expiredProducts(){
         return CACHE.values().stream()
                 .flatMap(List::stream)
-                .filter(p -> p instanceof FoodProducts)
-                .map(p -> (FoodProducts) p)
+                .filter(p -> p instanceof Perishable)
+                .map(p -> (Perishable) p)
                 .filter(p -> p.isExpired())
                 .collect(Collectors.toList());
     }
