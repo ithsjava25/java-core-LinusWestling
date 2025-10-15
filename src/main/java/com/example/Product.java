@@ -25,7 +25,7 @@ public abstract class Product {
     public String name(){
         return name;
     }
-    public Category cateogry(){
+    public Category category(){
         return category;
     }
     public BigDecimal price(){
@@ -38,6 +38,7 @@ public abstract class Product {
     }
 
     public abstract String productDetails();
+    public abstract BigDecimal costOfShipping();
 
     @Override
     public boolean equals(Object obj) {
