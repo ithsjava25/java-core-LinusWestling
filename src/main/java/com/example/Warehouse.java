@@ -91,6 +91,6 @@ public class Warehouse {
                 .flatMap(List::stream)
                 .filter(p -> p instanceof Shippable)
                 .map(p -> (Shippable) p)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
