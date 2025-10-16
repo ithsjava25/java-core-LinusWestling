@@ -142,25 +142,43 @@ class WarehouseAnalyzer {
      * number of standard deviations. Uses population standard deviation over all products.
      * Test expectation: with a mostly tight cluster and two extremes, calling with 2.0 returns the two extremes.
      *
-     * @param standardDeviations threshold in standard deviations (e.g., 2.0)
+     * @param multiplier threshold in standard deviations (e.g., 2.0)
      * @return list of products considered outliers
      */
-    public List<Product> findPriceOutliers(double standardDeviations) {
+    public List<Product> findPriceOutliers(double multiplier) {
         List<Product> products = warehouse.getProducts();
         int n = products.size();
         if (n == 0) return List.of();
-        double sum = products.stream().map(Product::price).mapToDouble(bd -> bd.doubleValue()).sum();
-        double mean = sum / n;
-        double variance = products.stream()
-                .map(Product::price)
-                .mapToDouble(bd -> Math.pow(bd.doubleValue() - mean, 2))
-                .sum() / n;
-        double std = Math.sqrt(variance);
-        double threshold = standardDeviations * std;
+        List<Double> sortedPrices = products.stream()
+                .map(p -> p.price().doubleValue())
+                .sorted()
+                .collect(Collectors.toList());
+
+        // Calculate Q1 and Q3 through ???Interpolating??? #MyBrainHurts
+        double q1Index = 0.25 * (n - 1);
+        int q1Lower = (int) Math.floor(q1Index);
+        int q1Upper = (int) Math.ceil(q1Index);
+        double q1Weight = q1Index - q1Lower;
+        double q1 = sortedPrices.get(q1Lower) * (1 - q1Weight) + sortedPrices.get(q1Upper) * q1Weight;
+
+        double q3Index = 0.75 * (n - 1);
+        int q3Lower = (int) Math.floor(q3Index);
+        int q3Upper = (int) Math.ceil(q3Index);
+        double q3Weight = q3Index - q3Lower;
+        double q3 = sortedPrices.get(q3Lower) * (1 - q3Weight) + sortedPrices.get(q3Upper) * q3Weight;
+
+        // Calculate IQR and the boundaries
+        double iqr = q3 - q1;
+        double lowerBound = q1 - multiplier * iqr;
+        double upperBound = q3 + multiplier * iqr;
+
+        // Find outliers
         List<Product> outliers = new ArrayList<>();
         for (Product p : products) {
-            double diff = Math.abs(p.price().doubleValue() - mean);
-            if (diff > threshold) outliers.add(p);
+            double price = p.price().doubleValue();
+            if (price < lowerBound || price > upperBound) {
+                outliers.add(p);
+            }
         }
         return outliers;
     }
