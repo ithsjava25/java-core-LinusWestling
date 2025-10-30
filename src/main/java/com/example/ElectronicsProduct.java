@@ -1,0 +1,49 @@
+package com.example;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public class ElectronicsProduct extends Product implements Shippable{
+
+    // Implements Shippable.
+
+    private int warrantyMonths;
+    private BigDecimal weight;
+
+    public ElectronicsProduct(UUID id, String name, Category category, BigDecimal price, int warrantyMonths, BigDecimal weight){
+        super(id, name, category, price);
+
+        if(warrantyMonths < 0){
+            throw new IllegalArgumentException("Warranty months cannot be negative.");
+        }
+        if(weight.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Weight cannot be negative.");
+        }
+
+        this.warrantyMonths = warrantyMonths;
+        this.weight = weight;
+
+    }
+
+    public double weight(){
+        return weight.doubleValue();
+    }
+
+    public String productDetails(){
+        return "Electronics: " + name() + ", Warranty: " + warrantyMonths + " months";
+    }
+
+    @Override
+    public Product cloneWithPrice(BigDecimal newPrice) {
+        return new ElectronicsProduct(this.uuid(), this.name(), this.category(), newPrice, this.warrantyMonths, this.weight);
+    }
+
+    public BigDecimal calculateShippingCost() {
+        if (weight() < 5) {
+            return BigDecimal.valueOf(79);
+        } else {
+            return BigDecimal.valueOf(79).add(BigDecimal.valueOf(49));
+        }
+    }
+
+}
