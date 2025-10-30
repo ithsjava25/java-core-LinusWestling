@@ -10,7 +10,7 @@ public class Warehouse {
     private static final Map<String, Warehouse> INSTANCES = new HashMap<>();
     private Map<Category, List<Product>> CACHE = new HashMap<>();
     private final Set<UUID> changedProducts = new HashSet<>();
-    private final String name;
+    private String name = "default";
 
     private Warehouse(String name){
         this.name = name;
@@ -18,6 +18,10 @@ public class Warehouse {
 
     public static Warehouse getInstance(String name) {
         return INSTANCES.computeIfAbsent(name, k -> new Warehouse(k));
+    }
+
+    public static Warehouse getInstance() {
+        return getInstance("default");
     }
 
     public void clearProducts() {
@@ -31,11 +35,19 @@ public class Warehouse {
     public void addProduct(Product product){
         if(product == null) {
             throw new IllegalArgumentException("Product cannot be null.");
-        } else {
-            Category category = product.category();
-            CACHE.computeIfAbsent(category, k -> new ArrayList<>()).add(product);
         }
+
+        boolean alreadyExists = CACHE.values().stream()
+                .flatMap(List::stream)
+                .anyMatch(p -> p.uuid().equals(product.uuid()));
+        if (alreadyExists) {
+            throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
+        }
+
+        Category category = product.category();
+        CACHE.computeIfAbsent(category, k -> new ArrayList<>()).add(product);
     }
+
     // Return list of all products
     public List<Product> getProducts() {
         return CACHE.values().stream()
@@ -43,13 +55,11 @@ public class Warehouse {
                 .toList();
     }
 
-    // Returnera produkten ifall det finns ett matchande ID
-    public List<UUID> getProductById(UUID id){
+    public Optional<Product> getProductById(UUID id){
         return CACHE.values().stream()
                 .flatMap(List::stream)
-                .map(p -> p.uuid())
-                .filter(uuid -> uuid.equals(id))
-                .toList();
+                .filter(p -> p.uuid().equals(id))
+                .findFirst();
     }
 
     public Map<Category, List<Product>> getProductsGroupedByCategories(){
@@ -67,16 +77,21 @@ public class Warehouse {
         CACHE.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
-    public void updateProductPrice(UUID id, BigDecimal price){
-        Product product = CACHE.values().stream()
-                .flatMap(List::stream)
-                .filter(p -> p.uuid().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
-
-        product.setPrice(price); // kräver att Product har setPrice(...)
-        changedProducts.add(id);
+    public void updateProductPrice(UUID id, BigDecimal newPrice) {
+        for (List<Product> products : CACHE.values()) {
+            for (int i = 0; i < products.size(); i++) {
+                Product p = products.get(i);
+                if (p.uuid().equals(id)) {
+                    Product updated = p.cloneWithPrice(newPrice);
+                    products.set(i, updated);
+                    changedProducts.add(id);
+                    return;
+                }
+            }
+        }
+        throw new NoSuchElementException("Product not found with id: " + id);
     }
+
 
     public List<Perishable> expiredProducts(){
         return CACHE.values().stream()

@@ -32,6 +32,12 @@ public class ElectronicsProduct extends Product implements Shippable{
     public String productDetails(){
         return "Electronics: " + name() + ", Warranty: " + warrantyMonths + " months";
     }
+
+    @Override
+    public Product cloneWithPrice(BigDecimal newPrice) {
+        return new ElectronicsProduct(this.uuid(), this.name(), this.category(), newPrice, this.warrantyMonths, this.weight);
+    }
+
     public BigDecimal calculateShippingCost() {
         if (weight() < 5) {
             return BigDecimal.valueOf(79);

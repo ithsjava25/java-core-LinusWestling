@@ -11,16 +11,13 @@ public abstract class Product {
     private final String name;
     private Category category;
     private BigDecimal price;
-    private static final Set<UUID> USED_IDS = new HashSet<>();
+    private final static Set<UUID> USED_IDS = new HashSet<>();
 
     // Public constructor
     public Product(UUID id, String name, Category category, BigDecimal price){
 
         if (id == null || name == null || category == null || price == null) {
             throw new IllegalArgumentException("Id, name, category, and price cannot be null.");
-        }
-        if (USED_IDS.contains(id)) {
-            throw new IllegalArgumentException("Duplicate UUID: " + id + ", use UUID.randomUUID() while constructing a new product");
         }
         if (price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Price cannot be negative.");
@@ -30,21 +27,24 @@ public abstract class Product {
         this.name = name;
         this.category = category;
         this.price = price;
-
     }
 
     // Get methods
     public UUID uuid(){
-        return id;
+        return this.id;
     }
     public String name(){
-        return name;
+        return this.name;
     }
     public Category category(){
-        return category;
+        return this.category;
     }
     public BigDecimal price(){
-        return price;
+        return this.price;
+    }
+
+    public static Set<UUID> getUSED_IDS() {
+        return USED_IDS;
     }
 
     // Set method (only price as instructed)
@@ -53,6 +53,7 @@ public abstract class Product {
     }
 
     public abstract String productDetails();
+    public abstract Product cloneWithPrice(BigDecimal newPrice);
 
     @Override
     public boolean equals(Object obj) {

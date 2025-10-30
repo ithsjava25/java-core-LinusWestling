@@ -32,6 +32,10 @@ public class FoodProduct extends Product implements Perishable, Shippable{
     public LocalDate expirationDate() {
         return expirationDate;
     }
+    @Override
+    public Product cloneWithPrice(BigDecimal newPrice) {
+        return new FoodProduct(this.uuid(), this.name(), this.category(), newPrice, this.expirationDate, this.weight);
+    }
 
     public String productDetails(){
         return "Food: " + name() + ", Expires: " + expirationDate;
