@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//Ändring för att kunna pusha igen
 public class Warehouse {
 
     private static final Map<String, Warehouse> INSTANCES = new HashMap<>();
